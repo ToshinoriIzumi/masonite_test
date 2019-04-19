@@ -1,0 +1,33 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<meta name="csrf-token" content="{{ csrf_token }}">
+<a href="/add">新規登録</a>
+<ul>
+{% for blog in blogs %}
+    <li id="blog_{{blog.id}}"><a href="/show/{{ blog.id }}">{{ blog.title }}</a> 
+        <a href="/edit/{{ blog.id }}">修正</a> 
+        <a href="#" class="delete" id="{{ blog.id }}">[X]</a>
+    </li>
+{% else %}
+    <li>記事がありません。</li>
+{% endfor %}
+</ul>
+<script>
+    $(function(){
+        $('.delete').click(function() {
+            var elements = $(this);
+            var id = elements[0].id;
+            var token = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                url: '/delete',
+                type: 'POST',
+                data: {
+                    '__token':token,
+                    'id': id
+                }
+            })
+            .done( (data) => {
+                $('#blog_' + data.id).fadeOut();
+            });
+        });
+    });
+</script>
